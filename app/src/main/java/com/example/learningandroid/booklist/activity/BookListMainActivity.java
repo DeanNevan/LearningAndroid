@@ -1,24 +1,16 @@
-package com.example.learningandroid.booklist;
+package com.example.learningandroid.booklist.activity;
 
 import android.os.Bundle;
 
 import com.example.learningandroid.R;
-import com.example.learningandroid.booklist.adapters.BookListAdapter;
-import com.google.android.material.snackbar.Snackbar;
+import com.example.learningandroid.booklist.adapter.BookListAdapter;
+import com.example.learningandroid.booklist.pojo.Book;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.view.View;
-
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.learningandroid.databinding.ActivityBookListMainBinding;
 
 import java.util.ArrayList;
 import java.util.List;

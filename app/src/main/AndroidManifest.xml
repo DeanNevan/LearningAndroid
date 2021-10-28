@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LearningAndroid">
         <activity
-            android:name=".booklist.BookListMainActivity"
+            android:name=".booklist.activity.BookListMainActivity"
             android:exported="true"
             android:label="@string/title_activity_book_list_main"
             android:theme="@style/Theme.LearningAndroid.NoActionBar" />

@@ -1,7 +1,6 @@
-package com.example.learningandroid.booklist.adapters;
+package com.example.learningandroid.booklist.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.learningandroid.R;
-import com.example.learningandroid.booklist.Book;
+import com.example.learningandroid.booklist.pojo.Book;
 
 import java.util.List;
 

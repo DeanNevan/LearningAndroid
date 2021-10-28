@@ -1,4 +1,4 @@
-package com.example.learningandroid.booklist;
+package com.example.learningandroid.booklist.pojo;
 
 import android.graphics.drawable.Drawable;
 
