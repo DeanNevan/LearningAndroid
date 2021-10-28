@@ -64,9 +64,6 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.MyView
             super(view);
             textViewTitle = (TextView) view.findViewById(R.id.text_view_book_title);
             imageViewCover = (ImageView) view.findViewById(R.id.image_view_book_cover);
-//            tv = (TextView) view.findViewById(R.id.txt_xs);
-//            msg = (TextView) view.findViewById(R.id.txt_msg);
-//            v = view;
         }
     }
 }
