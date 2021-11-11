@@ -1,8 +1,4 @@
-package com.example.learningandroid.booklist;
-
-import android.graphics.drawable.Drawable;
-
-import com.example.learningandroid.R;
+package com.example.learningandroid.booklist.pojo;
 
 public class Book {
 
@@ -22,5 +18,7 @@ public class Book {
         return title;
     }
 
-
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

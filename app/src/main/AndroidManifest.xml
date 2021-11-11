@@ -10,22 +10,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LearningAndroid">
         <activity
-            android:name=".booklist.BookListMainActivity"
+            android:name=".booklist.activity.BookListMainActivity"
             android:exported="true"
             android:label="@string/title_activity_book_list_main"
-            android:theme="@style/Theme.LearningAndroid.NoActionBar" />
-
+            />
         <activity
-            android:name=".MainActivity"
+            android:name=".booklist.activity.EditBookActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.LearningAndroid.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:label="EditBookActivity"
+            />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>
