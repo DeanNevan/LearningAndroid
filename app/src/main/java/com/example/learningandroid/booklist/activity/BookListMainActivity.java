@@ -9,6 +9,9 @@ import android.view.MenuItem;
 import com.example.learningandroid.R;
 import com.example.learningandroid.booklist.pojo.Book;
 import com.example.learningandroid.booklist.adapters.BookListAdapter;
+import com.example.learningandroid.booklist.pojo.BooksWrapper;
+import com.example.learningandroid.booklist.util.LocalDataWR;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -20,7 +23,10 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class BookListMainActivity extends AppCompatActivity {
@@ -34,15 +40,12 @@ public class BookListMainActivity extends AppCompatActivity {
     ActivityResultLauncher<Intent> editBookActivityLauncher;
     ActivityResultLauncher<Intent> addBookActivityLauncher;
 
+    private String booksLocalSaveFileName = "books.db";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_list_main);
-
-        //生成书本数据
-        books.add(new Book("软件项目管理案例教程（第4版）", R.drawable.book_2));
-        books.add(new Book("创新工程实践", R.drawable.book_no_name));
-        books.add(new Book("信息安全数学基础（第2版）", R.drawable.book_1));
 
         bookListAdapter = new BookListAdapter(this, books);
         booksRecyclerView = findViewById(R.id.recycle_view_books);
@@ -54,6 +57,21 @@ public class BookListMainActivity extends AppCompatActivity {
         booksRecyclerView.setAdapter(bookListAdapter);
         booksRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
+        //读取书本数据
+        try {
+            loadBooksFromLocal();
+            updateBooksListAndSaveToLocal();
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        if (books.size() == 0){
+            //生成书本数据
+            books.add(new Book("软件项目管理案例教程（第4版）", R.drawable.book_2));
+            books.add(new Book("创新工程实践", R.drawable.book_no_name));
+            books.add(new Book("信息安全数学基础（第2版）", R.drawable.book_1));
+            updateBooksListAndSaveToLocal();
+        }
+
         editBookActivityLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
             @Override
             public void onActivityResult(ActivityResult result) {
@@ -62,7 +80,7 @@ public class BookListMainActivity extends AppCompatActivity {
                     int bookID = result.getData().getIntExtra("book_id", -1);
                     String bookTitle = result.getData().getStringExtra("book_title");
                     getListBooks().get(bookID).setTitle(bookTitle);
-                    booksRecyclerView.setAdapter(bookListAdapter);
+                    updateBooksListAndSaveToLocal();
                 }
                 else if (result.getResultCode() == RESULT_CANCELED){
                     //nothing
@@ -78,7 +96,7 @@ public class BookListMainActivity extends AppCompatActivity {
                     int bookID = result.getData().getIntExtra("book_id", -1);
                     String bookTitle = result.getData().getStringExtra("book_title");
                     getListBooks().add(bookID, new Book(bookTitle, R.drawable.book_no_name));
-                    booksRecyclerView.setAdapter(bookListAdapter);
+                    updateBooksListAndSaveToLocal();
                 }
                 else if (result.getResultCode() == RESULT_CANCELED){
                     //nothing
@@ -95,6 +113,57 @@ public class BookListMainActivity extends AppCompatActivity {
 //                        .setAction("Action", null).show();
 //            }
 //        });
+    }
+
+    public void saveToLocal(String fileName, byte[] data) {
+        try{
+            FileOutputStream fout =openFileOutput(fileName, MODE_PRIVATE);
+            fout.write(data);
+            fout.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void updateBooksList(){
+        booksRecyclerView.setAdapter(bookListAdapter);
+    }
+
+    private void updateBooksListAndSaveToLocal(){
+        updateBooksList();
+        saveBooksToLocal();
+    }
+
+    private BooksWrapper.Books serializeBooksToProtobufBytes(){
+        BooksWrapper.Books.Builder builder = BooksWrapper.Books.newBuilder();
+        for (Book book : books){
+            builder.addBooks(book.toProtobufBook());
+        }
+        return builder.build();
+    }
+
+    private void unserializeBooksFromProtobufBytes(BooksWrapper.Books booksProtobuf){
+        books.clear();
+        for (BooksWrapper.Book bookProtobuf : booksProtobuf.getBooksList()){
+            Book book = new Book();
+            book.fromProtobufBook(bookProtobuf);
+            books.add(book);
+        }
+    }
+
+    public void saveBooksToLocal() {
+        BooksWrapper.Books booksProtobuf = serializeBooksToProtobufBytes();
+        Log.d("存储bytes", Arrays.toString(booksProtobuf.toByteArray()));
+        LocalDataWR.saveData(this, booksLocalSaveFileName, booksProtobuf.toByteArray());
+    }
+
+    public void loadBooksFromLocal() throws InvalidProtocolBufferException {
+        byte[] booksData = LocalDataWR.loadData(this, booksLocalSaveFileName);
+        if (booksData != null){
+            BooksWrapper.Books booksProtobuf = BooksWrapper.Books.parseFrom(booksData);
+            unserializeBooksFromProtobufBytes(booksProtobuf);
+        }
     }
 
     public void createMenu(Menu menu)
@@ -128,7 +197,7 @@ public class BookListMainActivity extends AppCompatActivity {
             case 1:
                 Log.d("BookList", String.format("%s:%d", "删除", selectedBookPosition));
                 books.remove(bookListAdapter.getContextMenuPosition());
-                booksRecyclerView.setAdapter(bookListAdapter);
+                updateBooksListAndSaveToLocal();
                 break;
             case 2:
                 activateEditBook();

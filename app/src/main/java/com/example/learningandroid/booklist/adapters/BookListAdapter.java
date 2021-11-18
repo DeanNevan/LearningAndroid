@@ -64,6 +64,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.MyView
         holder.textViewTitle.setText(book.getTitle());
         holder.imageViewCover.setImageResource(book.getCoverResourceID());
 
+        holder.itemView.setLongClickable(true);
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -84,7 +85,6 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.MyView
 
     @Override
     public void onViewRecycled(MyViewHolder holder) {
-        holder.itemView.setOnLongClickListener(null);
         super.onViewRecycled(holder);
     }
 
@@ -99,7 +99,21 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.MyView
 //            msg = (TextView) view.findViewById(R.id.txt_msg);
 //            v = view;
 
+            view.setLongClickable(true);
             view.setOnCreateContextMenuListener(this);
+//            view.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+//                @Override
+//                public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+//                    Log.d("test", "生成上下文菜单");
+//                }
+//            });
+//            view.setOnLongClickListener(new View.OnLongClickListener() {
+//                @Override
+//                public boolean onLongClick(View v) {
+//                    Log.d("test", "长按了");
+//                    return false;
+//                }
+//            });
         }
 
         @Override
