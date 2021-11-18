@@ -1,0 +1,10 @@
+syntax ="proto3";
+
+message Book{
+  int32 cover_resource_id = 1;
+  string title = 2;
+}
+
+message Books{
+  repeated Book books = 1;
+}
