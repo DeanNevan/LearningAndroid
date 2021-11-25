@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.learningandroid.R;
 import com.example.learningandroid.booklist.activity.BookListMainActivity;
 import com.example.learningandroid.booklist.pojo.Book;
+import com.example.learningandroid.combined.activity.ActivityCombined;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.MyView
     public BookListAdapter(Context context, List<Book> datas){
         this.context = context;
         this.bookList = datas;
-        inflater = LayoutInflater. from(context);
+        inflater = LayoutInflater.from(context);
 
     }
 
@@ -122,7 +123,7 @@ public class BookListAdapter extends RecyclerView.Adapter<BookListAdapter.MyView
             Book book = bookList.get(getContextMenuPosition());
             Log.i("Adapter", "onCreateContextMenu: " + getContextMenuPosition());
             menu.setHeaderTitle(book.getTitle());
-            ((BookListMainActivity) context).createMenu(menu);
+            ((ActivityCombined) context).createBookListMenu(menu);
         }
 
     }
