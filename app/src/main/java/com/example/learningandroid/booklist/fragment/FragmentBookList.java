@@ -1,34 +1,43 @@
-package com.example.learningandroid.booklist.activity;
+package com.example.learningandroid.booklist.fragment;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
+import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-
-import com.example.learningandroid.R;
-import com.example.learningandroid.booklist.pojo.Book;
-import com.example.learningandroid.booklist.adapters.BookListAdapter;
-import com.example.learningandroid.booklist.pojo.BooksWrapper;
-import com.example.learningandroid.booklist.util.LocalDataWR;
-import com.google.protobuf.InvalidProtocolBufferException;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.learningandroid.R;
+import com.example.learningandroid.booklist.activity.EditBookActivity;
+import com.example.learningandroid.booklist.adapters.BookListAdapter;
+import com.example.learningandroid.booklist.pojo.Book;
+import com.example.learningandroid.booklist.pojo.BooksWrapper;
+import com.example.learningandroid.booklist.util.LocalDataWR;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class BookListMainActivity extends AppCompatActivity {
+public class FragmentBookList extends Fragment {
 
     private List<Book> books = new ArrayList<>();
     private BookListAdapter bookListAdapter;
@@ -41,14 +50,14 @@ public class BookListMainActivity extends AppCompatActivity {
 
     private String booksLocalSaveFileName = "books.db";
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_book_list);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_book_list, container);
 
-        bookListAdapter = new BookListAdapter(this, books);
-        booksRecyclerView = findViewById(R.id.recycle_view_books);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this );
+        bookListAdapter = new BookListAdapter(getContext(), books);
+        booksRecyclerView = (RecyclerView) view.findViewById(R.id.recycle_view_books);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         booksRecyclerView.setLayoutManager(layoutManager);
         //如果可以确定每个item的高度是固定的，设置这个选项可以提高性能
         booksRecyclerView.setHasFixedSize(true);
@@ -103,20 +112,12 @@ public class BookListMainActivity extends AppCompatActivity {
             }
         });
 
-        //registerForContextMenu(booksRecyclerView);
-
-//        binding.fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
+        return view;
     }
 
     public void saveToLocal(String fileName, byte[] data) {
         try{
-            FileOutputStream fout =openFileOutput(fileName, MODE_PRIVATE);
+            FileOutputStream fout = getActivity().openFileOutput(fileName, MODE_PRIVATE);
             fout.write(data);
             fout.close();
         }
@@ -154,11 +155,11 @@ public class BookListMainActivity extends AppCompatActivity {
     public void saveBooksToLocal() {
         BooksWrapper.Books booksProtobuf = serializeBooksToProtobufBytes();
         Log.d("存储bytes", Arrays.toString(booksProtobuf.toByteArray()));
-        LocalDataWR.saveData(this, booksLocalSaveFileName, booksProtobuf.toByteArray());
+        LocalDataWR.saveData(getActivity(), booksLocalSaveFileName, booksProtobuf.toByteArray());
     }
 
     public void loadBooksFromLocal() throws InvalidProtocolBufferException {
-        byte[] booksData = LocalDataWR.loadData(this, booksLocalSaveFileName);
+        byte[] booksData = LocalDataWR.loadData(getActivity(), booksLocalSaveFileName);
         if (booksData != null){
             BooksWrapper.Books booksProtobuf = BooksWrapper.Books.parseFrom(booksData);
             unserializeBooksFromProtobufBytes(booksProtobuf);
@@ -211,7 +212,7 @@ public class BookListMainActivity extends AppCompatActivity {
     }
 
     private void activateEditBook(){
-        Intent intent = new Intent(this, EditBookActivity.class);
+        Intent intent = new Intent(getActivity(), EditBookActivity.class);
         int bookID = bookListAdapter.getContextMenuPosition();
         String bookTitle = getListBooks().get(bookID).getTitle();
         intent.putExtra("book_id", bookID);
@@ -221,7 +222,7 @@ public class BookListMainActivity extends AppCompatActivity {
     }
 
     private void activateAddBook(){
-        Intent intent = new Intent(this, EditBookActivity.class);
+        Intent intent = new Intent(getActivity(), EditBookActivity.class);
         int bookID = bookListAdapter.getContextMenuPosition();
         intent.putExtra("book_id", bookID);
         intent.putExtra("book_title", "");
@@ -233,5 +234,4 @@ public class BookListMainActivity extends AppCompatActivity {
     public List<Book> getListBooks(){
         return books;
     }
-
 }

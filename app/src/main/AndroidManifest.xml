@@ -19,6 +19,11 @@
             android:exported="true"
             android:label="EditBookActivity"
             />
+        <activity
+            android:name=".combined.activity.ActivityCombined"
+            android:exported="true"
+            android:label="EditBookActivity"
+            />
 
     </application>
 
