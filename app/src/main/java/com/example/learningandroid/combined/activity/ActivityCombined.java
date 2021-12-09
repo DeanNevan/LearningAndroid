@@ -1,5 +1,6 @@
 package com.example.learningandroid.combined.activity;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -34,6 +35,9 @@ public class ActivityCombined extends AppCompatActivity {
         //找到控件
         mTabLayout = findViewById(R.id.tab_layout);
         mViewPage = findViewById(R.id.view_page);
+
+        mViewPage.setUserInputEnabled(true);
+
         //创建适配器
         MyViewPageAdapter mAdapter = new MyViewPageAdapter(this, mDatas);
         mViewPage.setAdapter(mAdapter);
@@ -52,8 +56,14 @@ public class ActivityCombined extends AppCompatActivity {
         mViewPage.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
+                if (position == 2){
+                    mViewPage.setUserInputEnabled(false);
+                }
+                else{
+                    mViewPage.setUserInputEnabled(true);
+                }
                 super.onPageSelected(position);
-                Log.d("callback", "ViewPager2.OnPageChangeCallback");
+                Log.d("callback", "ViewPager2.OnPageChangeCallback:" + position);
             }
         });
         //TabLayout的选中改变监听
